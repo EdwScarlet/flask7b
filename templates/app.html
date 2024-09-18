@@ -22,6 +22,7 @@
             <th>Fecha y Hora</th>
           </tr>
         </thead>
+        <tbody id="tbodyTemperaturaHumedad"></tbody>
       </table>
     </div>
 
@@ -37,11 +38,17 @@
             })
 
             //                            Canal
-            var channel = pusher.subscribe("canalRegistrosTemperatura");
+            var channel = pusher.subscribe("canalRegistrosTemperaturaHumedad");
 
             //           Evento
-            channel.bind("registroTemperatura", function (data) {
-                alert("Ocurrió el evento")
+            channel.bind("registroTemperaturaHumedad", function (temperaturaHumedad) {
+                // alert("Ocurrió el evento")
+                console.log(temperaturaHumedad)
+                $("#tbodyTemperaturaHumedad").prepend(`<tr>
+                    <td>${temperaturaHumedad.temperatura}</td>
+                    <td>${temperaturaHumedad.humedad}</td>
+                    <td></td>
+                </tr>`)
             })
         })
     </script>    
