@@ -23,9 +23,9 @@ def alumnosGuardar():
 
 def evento():
     pusher_client = pusher.Pusher(
-        app_id="1714541",
-        key="cda1cc599395d699a2af",
-        secret="9e9c00fc36600060d9e2",
+        app_id="1867161",
+        key="fa5d8bfda2ad7ea780a1",
+        secret="e8b305488c131008f14b",
         cluster="us2",
         ssl=True
     )
