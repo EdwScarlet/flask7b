@@ -78,6 +78,6 @@ def registrar():
         ssl=True
     )
 
-    pusher_client.trigger("canalInscripcionCursos", "registroInscripcionCursos", args)
+    pusher_client.trigger("canalRegistrosInscripcionCursos", "registroInscripcionCursos", args)
 
     return args
