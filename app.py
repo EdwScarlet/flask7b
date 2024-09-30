@@ -47,7 +47,7 @@ def buscar():
         con.reconnect()
 
     cursor = con.cursor()
-    cursor.execute("SELECT * FROM sensor_log ORDER BY Id_Log DESC")
+    cursor.execute("SELECT * FROM tst0_cursos ORDER BY Id_Curso DESC")
     registros = cursor.fetchall()
 
     con.close()
@@ -63,21 +63,21 @@ def registrar():
 
     cursor = con.cursor()
 
-    sql = "INSERT INTO sensor_log (Temperatura, Humedad, Fecha_Hora) VALUES (%s, %s, %s)"
-    val = (args["temperatura"], args["humedad"], datetime.datetime.now(pytz.timezone("America/Matamoros")))
+    sql = "INSERT INTO tst0_cursos (Nombre_Curso, Telefono) VALUES (%s, %s)"
+    val = (args["curso"], args["telefono"])
     cursor.execute(sql, val)
     
     con.commit()
     con.close()
 
     pusher_client = pusher.Pusher(
-        app_id="1714541",
-        key="2df86616075904231311",
-        secret="2f91d936fd43d8e85a1a",
+        app_id="1867161",
+        key="fa5d8bfda2ad7ea780a1",
+        secret="e8b305488c131008f14b",
         cluster="us2",
         ssl=True
     )
 
-    pusher_client.trigger("canalRegistrosTemperaturaHumedad", "registroTemperaturaHumedad", args)
+    pusher_client.trigger("canalInscripcionCursos", "registroInscripcionCursos", args)
 
     return args
