@@ -2,6 +2,7 @@ from flask import Flask
 
 from flask import render_template
 from flask import request
+from flask import jsonify, make_response
 
 import pusher
 
@@ -41,35 +42,7 @@ def alumnosGuardar():
     return f"Matrícula {matricula} Nombre y Apellido {nombreapellido}"
 
 # Código usado en las prácticas
-@app.route("/buscar")
-def buscar():
-    if not con.is_connected():
-        con.reconnect()
-
-    cursor = con.cursor()
-    cursor.execute("SELECT * FROM tst0_cursos ORDER BY Id_Curso DESC")
-    registros = cursor.fetchall()
-
-    con.close()
-
-    return registros
-
-@app.route("/registrar", methods=["GET"])
-def registrar():
-    args = request.args
-
-    if not con.is_connected():
-        con.reconnect()
-
-    cursor = con.cursor()
-
-    sql = "INSERT INTO tst0_cursos (Nombre_Curso, Telefono) VALUES (%s, %s)"
-    val = (args["curso"], args["telefono"])
-    cursor.execute(sql, val)
-    
-    con.commit()
-    con.close()
-
+def notificarActualizacionRegistroCurso():
     pusher_client = pusher.Pusher(
         app_id="1867161",
         key="fa5d8bfda2ad7ea780a1",
@@ -80,4 +53,95 @@ def registrar():
 
     pusher_client.trigger("canalRegistrosInscripcionCursos", "registroInscripcionCursos", args)
 
-    return args
+@app.route("/buscar")
+def buscar():
+    if not con.is_connected():
+        con.reconnect()
+
+    cursor = con.cursor(dictionary=True)
+    cursor.execute("""
+    SELECT Id_Curso, Nombre_Cursos, Telefono FROM tst0_cursos 
+    ORDER BY Id_Curso DESC
+    LIMIT 10 OFFSET 0
+    """)
+    registros = cursor.fetchall()
+
+    con.close()
+
+    return make_response(jsonify(registros))
+
+@app.route("/guardar", methods=["POST"])
+def guardar():
+    if not con.is_connected():
+        con.reconnect()
+
+    id          = request.form["id"]
+    nombre_curso = request.form["curso"]
+    telefono     = request.form["telefono"]
+    
+    cursor = con.cursor()
+
+    if id:
+        sql = """
+        UPDATE tst0_cursos SET
+        Nombre_Curso = %s,
+        Telefono     = %s
+        WHERE Id_Curso = %s
+        """
+        val = (nombre_curso, telefono, id)
+    else:
+        sql = """
+        INSERT INTO tst0_cursos (Nombre_Curso, Telefono)
+                        VALUES (%s,          %s)
+        """
+        val =                  (nombre_curso, telefono)
+    
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    notificarActualizacionRegistroCurso()
+
+    return make_response(jsonify({}))
+
+@app.route("/editar", methods=["GET"])
+def editar():
+    if not con.is_connected():
+        con.reconnect()
+
+    id = request.args["id"]
+
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    SELECT Id_Curso, Nombre_Cursos, Telefono FROM tst0_cursos
+    WHERE Id_Curso = %s
+    """
+    val    = (id,)
+
+    cursor.execute(sql, val)
+    registros = cursor.fetchall()
+    con.close()
+
+    return make_response(jsonify(registros))
+
+@app.route("/eliminar", methods=["POST"])
+def eliminar():
+    if not con.is_connected():
+        con.reconnect()
+
+    id = request.form["id"]
+
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    DELETE FROM tst0_cursos
+    WHERE Id_Cursos = %s
+    """
+    val    = (id,)
+
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    notificarActualizacionRegistroCurso()
+
+    return make_response(jsonify({}))
