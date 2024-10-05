@@ -42,7 +42,7 @@ def alumnosGuardar():
     return f"Matrícula {matricula} Nombre y Apellido {nombreapellido}"
 
 # Código usado en las prácticas
-def notificarActualizacionRegistroCurso():
+def notificarActualizacionRegistroCurso(args):
     pusher_client = pusher.Pusher(
         app_id="1867161",
         key="fa5d8bfda2ad7ea780a1",
@@ -50,7 +50,7 @@ def notificarActualizacionRegistroCurso():
         cluster="us2",
         ssl=True
     )
-
+    
     pusher_client.trigger("canalRegistrosInscripcionCursos", "registroInscripcionCursos", args)
 
 @app.route("/buscar")
@@ -100,12 +100,21 @@ def guardar():
         cursor.execute(sql, val)
         con.commit()
 
-        notificarActualizacionRegistroCurso()
-        
+        # Definir args como un diccionario
+        args = {
+            "id": id,
+            "nombre_curso": nombre_curso,
+            "telefono": telefono
+        }
+
+        # Pasar args a la función notificarActualizacionRegistroCurso
+        notificarActualizacionRegistroCurso(args)
+
     except Exception as e:
-        return str(e), 500  # Devuelve el error exacto que está ocurriendo
+        return str(e), 500
     
     finally:
+        cursor.close()
         con.close()
 
     return make_response(jsonify({}))
