@@ -72,35 +72,41 @@ def buscar():
 
 @app.route("/guardar", methods=["POST"])
 def guardar():
-    if not con.is_connected():
-        con.reconnect()
+    try:
+        if not con.is_connected():
+            con.reconnect()
 
-    id          = request.form["id"]
-    nombre_curso = request.form["curso"]
-    telefono     = request.form["telefono"]
+        id = request.form["id"]
+        nombre_curso = request.form["curso"]
+        telefono = request.form["telefono"]
+
+        cursor = con.cursor()
+
+        if id:
+            sql = """
+            UPDATE tst0_cursos SET
+            Nombre_Curso = %s,
+            Telefono = %s
+            WHERE Id_Curso = %s
+            """
+            val = (nombre_curso, telefono, id)
+        else:
+            sql = """
+            INSERT INTO tst0_cursos (Nombre_Curso, Telefono)
+                            VALUES (%s, %s)
+            """
+            val = (nombre_curso, telefono)
+
+        cursor.execute(sql, val)
+        con.commit()
+
+        notificarActualizacionRegistroCurso()
+        
+    except Exception as e:
+        return str(e), 500  # Devuelve el error exacto que está ocurriendo
     
-    cursor = con.cursor()
-
-    if id:
-        sql = """
-        UPDATE tst0_cursos SET
-        Nombre_Curso = %s,
-        Telefono     = %s
-        WHERE Id_Curso = %s
-        """
-        val = (nombre_curso, telefono, id)
-    else:
-        sql = """
-        INSERT INTO tst0_cursos (Nombre_Curso, Telefono)
-                        VALUES (%s,          %s)
-        """
-        val =                  (nombre_curso, telefono)
-    
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-
-    notificarActualizacionRegistroCurso()
+    finally:
+        con.close()
 
     return make_response(jsonify({}))
 
