@@ -25,22 +25,6 @@ def index():
 
     return render_template("app.html")
 
-# Ejemplo de ruta GET usando templates para mostrar una vista
-@app.route("/alumnos")
-def alumnos():
-    con.close()
-
-    return render_template("alumnos.html")
-
-# Ejemplo de ruta POST para ver cómo se envia la informacion
-@app.route("/alumnos/guardar", methods=["POST"])
-def alumnosGuardar():
-    con.close()
-    matricula      = request.form["txtMatriculaFA"]
-    nombreapellido = request.form["txtNombreApellidoFA"]
-
-    return f"Matrícula {matricula} Nombre y Apellido {nombreapellido}"
-
 # Código usado en las prácticas
 def notificarActualizacionRegistroCurso(args):
     pusher_client = pusher.Pusher(
