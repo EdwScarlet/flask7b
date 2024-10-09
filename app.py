@@ -26,7 +26,7 @@ def index():
     return render_template("app.html")
 
 # Ruta para manejar la creación y edición de cursos
-@app.route("/curso", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def curso():
     if request.method == "POST":
         id_curso = request.form.get("id_curso")
