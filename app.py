@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+9from flask import Flask, render_template, request, jsonify
 import pusher
 import mysql.connector
 
@@ -23,7 +23,7 @@ def get_db_connection():
 
 @app.route("/")
 def index():
-    return render_template("curso.html")
+    return render_template("app.html")
 
 # Ruta para manejar la creación y edición de cursos
 @app.route("/curso", methods=["GET", "POST"])
