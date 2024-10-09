@@ -5,10 +5,10 @@ import mysql.connector
 app = Flask(__name__)
 
 pusher_client = pusher.Pusher(
-    app_id = "1872172",
-    key = "ab077c6305428af0579b",
-    secret = "a2f133d9ea7bb1f9e37e",
-    cluster = "mt1",
+    app_id = "1867161",
+    key = "fa5d8bfda2ad7ea780a1",
+    secret = "e8b305488c131008f14b",
+    cluster = "us2",
     ssl=True
 )
 
