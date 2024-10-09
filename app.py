@@ -58,7 +58,7 @@ def curso():
             "id_curso": id_curso if id_curso else cursor.lastrowid
         })
 
-    return render_template("curso.html")
+    return render_template("app.html")
 
 @app.route("/buscar")
 def buscar():
